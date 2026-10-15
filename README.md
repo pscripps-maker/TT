@@ -75,3 +75,20 @@ Reliability update: undo snapshots are now capped by both count and total size. 
 4. Create two teams and save one match with a goal and assist for the first team. Select that team in Statistics and History; its saved match and player event counts should appear. Select the second team; the first team's match should be excluded.
 
 **Important technical limitation:** this is a transitional IndexedDB-backed release: localStorage remains the synchronous compatibility store because the existing application reads its state synchronously at startup. Data is mirrored into IndexedDB and can be restored from it when localStorage is absent, but this is not yet a complete localStorage-free IndexedDB-only rewrite.
+
+
+## Release TT-2026.10.15-r3
+
+- Penalty shootout first-kicker choice is now inside the shootout setup popup.
+- Match substitutions update formation slots so the visual formation follows live substitutions.
+- Team data import accepts both selective team backup files and full Touchline Tracker JSON backups.
+- Statistics player table now aggregates filtered saved/current match records and honours team, season/tournament, and date filters.
+- Check `version.json` and open Settings and tap the small version link at the very bottom to open diagnostics.
+
+File version IDs: `index.html`, `app.js`, `inline-check.js`, and `manifest.webmanifest`: `TT-2026.10.15-r3`; `sw.js` cache: `touchline-tracker-20261015-r3`. `version.json` contains SHA-256 hashes for the shipped files.
+
+
+## Release TT-2026.10.15-r3
+
+- Replaced the five-tap top-banner gesture with a discreet “version TT-2026.10.15-r3” text link at the bottom of Settings. Tapping it opens build diagnostics.
+- Updated the service-worker cache identifier so the new build can replace the cached release.

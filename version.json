@@ -1,18 +1,18 @@
 {
-  "release": "TT-2026.10.15-r1",
-  "cache": "touchline-tracker-20261015-r1",
+  "release": "TT-2026.10.15-r3",
+  "cache": "touchline-tracker-20261015-r3",
   "files": {
-    "index.html": "TT-2026.10.15-r1",
-    "app.js": "TT-2026.10.15-r1",
-    "inline-check.js": "TT-2026.10.15-r1",
-    "sw.js": "touchline-tracker-20261015-r1",
-    "manifest.webmanifest": "TT-2026.10.15-r1"
+    "index.html": "TT-2026.10.15-r3",
+    "app.js": "TT-2026.10.15-r3",
+    "inline-check.js": "TT-2026.10.15-r3",
+    "sw.js": "touchline-tracker-20261015-r3",
+    "manifest.webmanifest": "TT-2026.10.15-r3"
   },
   "sha256": {
-    "index.html": "30942886f35cd52d4ecf7578607a827ce92277e113f4137a99340232218b7749",
-    "app.js": "47c18f8d1c29269854346e4606910ca815d1edb07d4d5fc534986646a37c5304",
-    "inline-check.js": "47c18f8d1c29269854346e4606910ca815d1edb07d4d5fc534986646a37c5304",
-    "sw.js": "26cc70db215e6cc883c42f0958a921d1b53d5a84841d7a0eb5acb810660a54eb",
+    "index.html": "27f77d7934558b002144fa65249121fad126a63e9b14cfecff0dc859509a7864",
+    "app.js": "e87abbe6c7a46a087f3d27def1d1b01f09a69b2eb9368d8aa85dfea387cd402c",
+    "inline-check.js": "e87abbe6c7a46a087f3d27def1d1b01f09a69b2eb9368d8aa85dfea387cd402c",
+    "sw.js": "74c52869d9086147f1661b9074339f59ede67cb2a58cd8f790d82b26b5dda55a",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   }
 }
