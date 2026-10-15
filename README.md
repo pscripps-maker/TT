@@ -77,7 +77,7 @@ Reliability update: undo snapshots are now capped by both count and total size. 
 **Important technical limitation:** this is a transitional IndexedDB-backed release: localStorage remains the synchronous compatibility store because the existing application reads its state synchronously at startup. Data is mirrored into IndexedDB and can be restored from it when localStorage is absent, but this is not yet a complete localStorage-free IndexedDB-only rewrite.
 
 
-## Release TT-2026.10.15-r3
+## Release TT-2026.10.15-r4
 
 - Penalty shootout first-kicker choice is now inside the shootout setup popup.
 - Match substitutions update formation slots so the visual formation follows live substitutions.
@@ -85,10 +85,13 @@ Reliability update: undo snapshots are now capped by both count and total size. 
 - Statistics player table now aggregates filtered saved/current match records and honours team, season/tournament, and date filters.
 - Check `version.json` and open Settings and tap the small version link at the very bottom to open diagnostics.
 
-File version IDs: `index.html`, `app.js`, `inline-check.js`, and `manifest.webmanifest`: `TT-2026.10.15-r3`; `sw.js` cache: `touchline-tracker-20261015-r3`. `version.json` contains SHA-256 hashes for the shipped files.
+File version IDs: `index.html`, `app.js`, `inline-check.js`, and `manifest.webmanifest`: `TT-2026.10.15-r4`; `sw.js` cache: `touchline-tracker-20261015-r4`. `version.json` contains SHA-256 hashes for the shipped files.
 
 
-## Release TT-2026.10.15-r3
+## Release TT-2026.10.15-r4
 
-- Replaced the five-tap top-banner gesture with a discreet “version TT-2026.10.15-r3” text link at the bottom of Settings. Tapping it opens build diagnostics.
+- Replaced the five-tap top-banner gesture with a discreet “version TT-2026.10.15-r4” text link at the bottom of Settings. Tapping it opens build diagnostics.
 - Updated the service-worker cache identifier so the new build can replace the cached release.
+
+
+Release r4 fixes the Settings version diagnostics link, wires the Team page import button to the device file picker, and rebuilds History / Stats filters to use team, season and competition type only (no date filters or filter opt-out checkbox).
