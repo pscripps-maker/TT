@@ -167,3 +167,9 @@ This build restores the complete r8 application codebase (rather than the reduce
 - A shot resulting in a goal is counted once as a shot attempt, while still counting as a goal.
 - Updated the service-worker cache to r14 and refreshed the SHA-256 file hashes in `version.json`.
 - Validation: JavaScript syntax checks, embedded-script consistency checks, and ZIP integrity checks passed. This release has not been tested end-to-end on a physical Android device.
+
+
+## r15 — Player of the Match and custom event management (2026-10-17)
+- Custom event buttons now appear in Event button settings with editable labels, button order, and Delete controls. Deleting a custom event removes it from current settings/statistics; existing match timeline records are retained.
+- After full time (including ending the final half/quarter), the app prompts to choose Player of the Match. The selection is saved with the match, can be changed later from the live screen, appears in match reports, and is counted in player statistics.
+- Existing local data is preserved during update; do not clear browser storage.

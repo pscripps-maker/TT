@@ -1,20 +1,21 @@
 {
-  "release": "TT-2026.10.16-r14",
-  "cache": "touchline-tracker-20261016-r14",
+  "release": "Player of the Match selection and custom event edit/delete",
+  "cache": "touchline-tracker-20261017-r15",
   "files": {
-    "index.html": "620e6392e3b18f9c1a57f9143be7666be87d17f461a7067ea59c84c2ecd91243",
-    "app.js": "2002b440221fe3d2a9fc4552629964a68dfd4805a639b5251c687c17bc59674d",
-    "inline-check.js": "2002b440221fe3d2a9fc4552629964a68dfd4805a639b5251c687c17bc59674d",
-    "sw.js": "2978048e639b48da24e4ff698512274c47a3d391d2549e5ae2ce7c55fa98be43",
+    "index.html": "f58f7c4f169dc6870c741eeef111ad15ee573e00931e6b9dcdc41b3dfc9e4d0a",
+    "app.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
+    "inline-check.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
+    "sw.js": "21770a6358a8a09d28c3ce856ef01b49065e5fd7c68699e46a915ddde486837a",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
   "sha256": {
-    "index.html": "620e6392e3b18f9c1a57f9143be7666be87d17f461a7067ea59c84c2ecd91243",
-    "app.js": "2002b440221fe3d2a9fc4552629964a68dfd4805a639b5251c687c17bc59674d",
-    "inline-check.js": "2002b440221fe3d2a9fc4552629964a68dfd4805a639b5251c687c17bc59674d",
-    "sw.js": "2978048e639b48da24e4ff698512274c47a3d391d2549e5ae2ce7c55fa98be43",
+    "index.html": "f58f7c4f169dc6870c741eeef111ad15ee573e00931e6b9dcdc41b3dfc9e4d0a",
+    "app.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
+    "inline-check.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
+    "sw.js": "21770a6358a8a09d28c3ce856ef01b49065e5fd7c68699e46a915ddde486837a",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
-  "version": "TT-2026.10.16-r14",
-  "build": "TT-2026.10.16-r14"
+  "version": "TT-2026.10.17-r15",
+  "build": "TT-2026.10.17-r15",
+  "date": "2026-10-17"
 }
