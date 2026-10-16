@@ -138,3 +138,10 @@ Release r4 fixes the Settings version diagnostics link, wires the Team page impo
 ## r10 saved-match recovery
 
 This build restores the complete r8 application codebase (rather than the reduced r9 script) and applies a narrow saved-match fix. Live Save Match, the History page save button, and New Match now use a shared match-content check and archive routine. A named team/match can be saved even at 0–0, and a meaningful previous match is archived before starting a new one. The rest of the team, live match, formation, penalty shootout, import/export and settings handlers are retained from r8.
+
+
+## History and storage recovery (r11)
+
+- Saved matches from the current local-storage key, known legacy local-storage keys, and the IndexedDB mirror are reconciled into one saved-match list instead of one store replacing another.
+- Match history is grouped by team, then season, then tournament/competition, while the existing team, season and competition filters apply to both reports and statistics.
+- Browser data sources are read and merged without clearing them. Keep exporting a backup before updates; local-file and GitHub Pages storage are separate browser origins.

@@ -1,20 +1,20 @@
 {
-  "release": "TT-2026.10.16-r10",
-  "cache": "touchline-tracker-20261016-r10",
+  "release": "TT-2026.10.16-r11",
+  "cache": "touchline-tracker-20261016-r11",
   "files": {
-    "index.html": "b90899621e23e3ddbc18420b8423157abb6270768077f73051855df3ed6dd47e",
-    "app.js": "f89b52a7f1921527bf1d56b253e7ca16e01efc904563296edc51c13e224f83c5",
-    "inline-check.js": "f89b52a7f1921527bf1d56b253e7ca16e01efc904563296edc51c13e224f83c5",
-    "sw.js": "f2711e782d40f913f3272547f55d9abc4f4beb129ed9636a1f030e08689a34d9",
+    "index.html": "89e64c3f3579153912aac6d23b65745e37d1a937214d51c2ab60fb0d6bcf0348",
+    "app.js": "461ab0bd650e0efaeed97faac3a021d4853c07bd11c61511eaa5d56e8992ee15",
+    "inline-check.js": "461ab0bd650e0efaeed97faac3a021d4853c07bd11c61511eaa5d56e8992ee15",
+    "sw.js": "760418a064dbbb15d0d071d08aae95020e9823c576fbbd1aef365c7fa99a35d8",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
   "sha256": {
-    "index.html": "b90899621e23e3ddbc18420b8423157abb6270768077f73051855df3ed6dd47e",
-    "app.js": "f89b52a7f1921527bf1d56b253e7ca16e01efc904563296edc51c13e224f83c5",
-    "inline-check.js": "f89b52a7f1921527bf1d56b253e7ca16e01efc904563296edc51c13e224f83c5",
-    "sw.js": "f2711e782d40f913f3272547f55d9abc4f4beb129ed9636a1f030e08689a34d9",
+    "index.html": "89e64c3f3579153912aac6d23b65745e37d1a937214d51c2ab60fb0d6bcf0348",
+    "app.js": "461ab0bd650e0efaeed97faac3a021d4853c07bd11c61511eaa5d56e8992ee15",
+    "inline-check.js": "461ab0bd650e0efaeed97faac3a021d4853c07bd11c61511eaa5d56e8992ee15",
+    "sw.js": "760418a064dbbb15d0d071d08aae95020e9823c576fbbd1aef365c7fa99a35d8",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
-  "version": "TT-2026.10.16-r10",
-  "build": "TT-2026.10.16-r10"
+  "version": "TT-2026.10.16-r11",
+  "build": "TT-2026.10.16-r11"
 }
