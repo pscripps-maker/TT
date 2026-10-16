@@ -1,4 +1,4 @@
-const CACHE = 'touchline-tracker-20261016-r7';
+const CACHE = 'touchline-tracker-20261016-r8';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './app.js', './inline-check.js', './icon.svg', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
@@ -11,6 +11,14 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   const isNavigation = event.request.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/');
   if (isNavigation) {
+    event.respondWith(fetch(event.request).then(response => {
+      if (response && response.ok && url.origin === self.location.origin) caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
+      return response;
+    }).catch(() => caches.match(event.request).then(hit => hit || caches.match('./index.html'))));
+    return;
+  }
+  const isAppCode = /\/(app\.js|inline-check\.js|index\.html|sw\.js)$/.test(url.pathname);
+  if (isAppCode) {
     event.respondWith(fetch(event.request).then(response => {
       if (response && response.ok && url.origin === self.location.origin) caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
       return response;
