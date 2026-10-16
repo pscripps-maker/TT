@@ -118,7 +118,7 @@ Release r4 fixes the Settings version diagnostics link, wires the Team page impo
 - History and statistics share normalized saved-match data; history reports matches shown versus stored and filters only by the selected team, season, and competition.
 
 
-## Release TT-2026.10.16-r8
+## Release TT-2026.10.16-r9
 
 - The Settings version link is bound as soon as the script starts, so a later startup error cannot leave it inert.
 - The service worker uses network-first for page navigation, reducing the chance that GitHub Pages keeps displaying an older embedded script after publishing.
@@ -127,9 +127,18 @@ Release r4 fixes the Settings version diagnostics link, wires the Team page impo
 - No IndexedDB file is needed in the ZIP: the browser creates the database.
 
 
-## r8 data integrity fixes
+## r9 data integrity fixes
 - Factory reset clears the app's localStorage entries and IndexedDB object-store records before reloading, preventing old match data from being restored after reset.
 - Saved-match deletion no longer re-archives the same current match when that record is deleted.
 - Statistics filter options are refreshed before calculating player-stat totals to avoid stale selections.
 - Player statistics heading clarifies that totals apply to filtered matches.
 - Service worker cache version incremented and app code resources use network-first with offline fallback.
+
+
+## r9 saved-match reliability fix
+
+- The live Save match action and the Saved matches page button call the same explicit save routine.
+- Explicit saving supports 0–0 matches as long as a team or opponent has been entered.
+- Starting a new match archives the previous meaningful match before creating the new one.
+- Saved matches are upserted by a stable history key to avoid duplicate records.
+- The current-match prompt is wired directly after rendering, so it does not depend solely on document-level delegated click handling.
