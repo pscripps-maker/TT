@@ -159,3 +159,11 @@ This build restores the complete r8 application codebase (rather than the reduce
 - History and statistics now honour selected team, season and competition filters strictly. They no longer silently fall back to showing all teams when a filter has no matches.
 - Empty filter results now give a clear message instead of mixing unrelated saved matches into the result.
 - Service-worker cache bumped to r13.
+
+
+## Release TT-2026.10.16-r14 — shot statistics fix
+
+- Player and team shot statistics now count recorded shot outcomes (`shot_saved`, `shot_post`, `shot_crossbar`, `shot_offtarget`, and other `shot_*` events), explicit `shot` events, and goals recorded with `sourceType: "shot"`.
+- A shot resulting in a goal is counted once as a shot attempt, while still counting as a goal.
+- Updated the service-worker cache to r14 and refreshed the SHA-256 file hashes in `version.json`.
+- Validation: JavaScript syntax checks, embedded-script consistency checks, and ZIP integrity checks passed. This release has not been tested end-to-end on a physical Android device.
