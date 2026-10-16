@@ -1,4 +1,4 @@
-const CACHE = 'touchline-tracker-20261016-r12';
+const CACHE = 'touchline-tracker-20261016-r13';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './app.js', './inline-check.js', './icon.svg', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));

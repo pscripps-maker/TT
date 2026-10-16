@@ -1,5 +1,5 @@
 'use strict';
-const $=id=>document.getElementById(id), KEY='touchline-tracker-pwa-v2', BUILD_ID='TT-2026.10.16-r12';
+const $=id=>document.getElementById(id), KEY='touchline-tracker-pwa-v2', BUILD_ID='TT-2026.10.16-r13';
 const DB_NAME='touchline-tracker-db', DB_VERSION=1; let dbReady=Promise.resolve(false), resetInProgress=false;
 function openAppDB(){return new Promise(resolve=>{if(!('indexedDB' in window)){resolve(false);return}const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('app'))db.createObjectStore('app',{keyPath:'id'});if(!db.objectStoreNames.contains('meta'))db.createObjectStore('meta',{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>resolve(false)})}
 async function idbGet(){const db=await openAppDB();if(!db)return null;return new Promise(resolve=>{try{const r=db.transaction('app','readonly').objectStore('app').get('state');r.onsuccess=()=>resolve(r.result?.value||null);r.onerror=()=>resolve(null)}catch{resolve(null)}})}
@@ -182,17 +182,24 @@ function renderStats(){
  const types=selectedStatTypes(),selected=$('statsTeamSelect')?.value||'all';
  const all=seasonMatches();
  const filteredRecords=selectedPeriodMatches(all).filter(({match})=>selected==='all'||String(match.team||'Unnamed team')===selected);
- const records=(filteredRecords.length||!all.length)?filteredRecords:all;
- const filterFallback=all.length>0&&filteredRecords.length===0;
+ const records=filteredRecords;
+ const filterFallback=false;
  const players=new Map();
  for(const {match} of records){const add=(id,name)=>{if(!id&&!name)return;const key=id||('name:'+name);if(!players.has(key))players.set(key,{id:id||key,name:name||'Unknown player'})};(match.squadSnapshot||[]).forEach(p=>add(p.id,p.name));(match.events||[]).forEach(e=>{if(e.playerId)add(e.playerId,e.playerName||e.scorerName);if(e.assistId)add(e.assistId,e.assistName)});(match.shootout?.our||[]).forEach(k=>add(k.playerId,k.playerName));}
  const aggregate=(player,type)=>records.reduce((sum,{match})=>{const v=eventStatCount(match,player.id,type);if(type==='penalty'){sum.main+=v.main;sum.shootout+=v.shootout}else sum+=v;return sum},type==='penalty'?{main:0,shootout:0}:0);
  const totalFor=type=>records.reduce((sum,{match})=>{const v=statTotalForMatch(match,type);if(type==='penalty'){sum.main+=v.main;sum.shootout+=v.shootout}else sum+=v;return sum},type==='penalty'?{main:0,shootout:0}:0);
  if(records.length){for(const p of (data.squad||[])){const key=p.id||('name:'+p.name);if(!players.has(key))players.set(key,{id:p.id||key,name:p.name||'Unknown player'});}}
  const rows=[...players.values()].sort((a,b)=>a.name.localeCompare(b.name));
- $('stats').innerHTML=records.length?`${filterFallback?'<div class="notice">No matches matched the selected filters, so statistics below show all saved matches instead.</div>':''}<p class="muted">${records.length} match${records.length===1?'':'es'} included · ${esc(filterFallback?'All saved matches':(selected==='all'?'All teams':selected))} · team, season and competition filters applied.</p><div style="overflow-x:auto"><table class="stat-table"><thead><tr><th>Player</th>${types.map(t=>`<th>${esc(statTypes().find(x=>x[0]===t)?.[1]||t)}</th>`).join('')}</tr></thead><tbody>${rows.map(p=>`<tr><td>${esc(p.name)}</td>${types.map(type=>`<td>${esc(statDisplay(aggregate(p,type),type))}</td>`).join('')}</tr>`).join('')}<tr class="stat-total"><th>TEAM TOTAL</th>${types.map(type=>`<th>${esc(totalDisplay(totalFor(type),type))}</th>`).join('')}</tr></tbody></table></div>`:'<div class="empty">No saved matches match these filters. With all three filters set to All, every saved match should be included.</div>';
+ $('stats').innerHTML=records.length?`<p class="muted">${records.length} match${records.length===1?'':'es'} included · ${esc(selected==='all'?'All teams':selected)} · team, season and competition filters applied.</p><div style="overflow-x:auto"><table class="stat-table"><thead><tr><th>Player</th>${types.map(t=>`<th>${esc(statTypes().find(x=>x[0]===t)?.[1]||t)}</th>`).join('')}</tr></thead><tbody>${rows.map(p=>`<tr><td>${esc(p.name)}</td>${types.map(type=>`<td>${esc(statDisplay(aggregate(p,type),type))}</td>`).join('')}</tr>`).join('')}<tr class="stat-total"><th>TEAM TOTAL</th>${types.map(type=>`<th>${esc(totalDisplay(totalFor(type),type))}</th>`).join('')}</tr></tbody></table></div>`:'<div class="empty">No saved matches match the selected team, season and competition filters. Choose Clear filters to show all saved matches.</div>';
 }
 function seasonMatches(){const list=(Array.isArray(data.matches)?data.matches:[]).map((r,i)=>{const n=normaliseSavedMatch(r,i),mm=n.match;return {key:'saved-'+i,match:mm,record:r}});if(m().status!=='finished'&&m().events.some(e=>e.type==='goal'||e.type==='opponentGoal'))list.push({key:'current',match:m(),record:null});return list}
+function seasonForDate(date){
+ const value=String(date||'').slice(0,10);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return '';
+ const seasons=Array.isArray(data.settings?.seasons)?data.settings.seasons:[];
+ const match=seasons.find(s=>s&&s.name&&s.start&&s.end&&value>=String(s.start).slice(0,10)&&value<=String(s.end).slice(0,10));
+ return match?String(match.name):'';
+}
 function selectedPeriodMatches(list){const season=$('seasonSelect')?.value||'all',competition=$('competitionFilter')?.value||'all';return list.filter(({match})=>{const type=String(match.matchType||match.competitionType||'League').trim()||'League';if(competition!=='all'&&type.toLowerCase()!==String(competition).toLowerCase())return false;if(season==='all')return true;const wanted=String(season).startsWith('season:')?String(season).slice(7):String(season);const actual=String(match.season||seasonForDate(match.date||'')||'').trim();return actual===wanted})}
 function renderSeasonStats(){
  const matches=seasonMatches();
@@ -239,13 +246,13 @@ function renderHistory(){
  const selectedTeam=$('statsTeamSelect')?.value||'all';
  const normalised=(Array.isArray(data.matches)?data.matches:[]).map((record,index)=>normaliseSavedMatch(record,index));
  const filteredItems=normalised.filter(({match})=>selectedTeam==='all'||match.team===selectedTeam).filter(({match})=>selectedPeriodMatches([{match}]).length>0);
- const historyFallback=normalised.length>0&&filteredItems.length===0;
- const items=(historyFallback?normalised:filteredItems).slice().reverse();
+ const historyFallback=false;
+ const items=filteredItems.slice().reverse();
  const host=$('historyList');if(!host)return;
  const current=m(),hasCurrent=matchHasContent(current)&&current.status!=='finished';
  const currentAlreadySaved=!!current.historyKey&&normalised.some(({record,match})=>record.historyKey===current.historyKey||match.historyKey===current.historyKey);
  const showCurrent=hasCurrent&&!currentAlreadySaved&&(selectedTeam==='all'||String(current.team||'Unnamed team')===selectedTeam)&&selectedPeriodMatches([{match:normaliseSavedMatch(current,-1).match}]).length>0;
- const summary=`${historyFallback?'<div class="notice"><strong>Filter recovery:</strong> no matches matched the selected filters, so all saved match records are shown below to prevent them being hidden.</div>':''}<p class="muted" style="margin:0 0 10px">Showing ${items.length} of ${normalised.length} saved matches · ${esc(historyFallback?'All saved matches':(selectedTeam==='all'?'All teams':selectedTeam))} · season and competition filters applied.</p>`;
+ const summary=`<p class="muted" style="margin:0 0 10px">Showing ${items.length} of ${normalised.length} saved matches · ${esc(selectedTeam==='all'?'All teams':selectedTeam)} · season and competition filters applied.</p>`;
  let currentHtml='';
  if(showCurrent){const mm=current,goals=(mm.events||[]).filter(e=>e.type==='goal').length,opGoals=(mm.events||[]).filter(e=>e.type==='opponentGoal').length;currentHtml=`<div class="summaryline" style="border:1px solid var(--accent,#888);margin-bottom:10px"><strong>Current match · not yet saved to history</strong><div>${esc(mm.team||'Your team')} vs ${esc(mm.opponent||'Opposition')}</div><div class="muted">${esc(mm.date||'')} · ${esc(mm.matchType||'League')} · ${goals}–${opGoals}</div><button type="button" class="primary small" data-savecurrenthistory>Save current match to history</button></div>`}
  const bindSave=()=>{const b=host.querySelector('[data-savecurrenthistory]');if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();if(saveCurrentMatchToHistory()){alert('Match saved to history.');render()}}};

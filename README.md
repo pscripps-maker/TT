@@ -152,3 +152,10 @@ This build restores the complete r8 application codebase (rather than the reduce
 - If filters unexpectedly hide every record while saved matches exist, history shows all records with a recovery notice instead of an empty list.
 - Player statistics use the same saved-match set and include current squad names when older reports lack squad snapshots.
 - Service-worker cache bumped to r12.
+
+
+## r13 Saved-match statistics and filter fix
+- Added the missing safe `seasonForDate` helper; this helper was referenced by history/statistics rendering but was absent, so rendering could stop with a JavaScript error.
+- History and statistics now honour selected team, season and competition filters strictly. They no longer silently fall back to showing all teams when a filter has no matches.
+- Empty filter results now give a clear message instead of mixing unrelated saved matches into the result.
+- Service-worker cache bumped to r13.
