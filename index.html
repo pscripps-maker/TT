@@ -52,7 +52,7 @@
 <div id="modalRoot"></div>
 <script>
 'use strict';
-const $=id=>document.getElementById(id), KEY='touchline-tracker-pwa-v2', BUILD_ID='TT-2026.10.16-r11';
+const $=id=>document.getElementById(id), KEY='touchline-tracker-pwa-v2', BUILD_ID='TT-2026.10.16-r12';
 const DB_NAME='touchline-tracker-db', DB_VERSION=1; let dbReady=Promise.resolve(false), resetInProgress=false;
 function openAppDB(){return new Promise(resolve=>{if(!('indexedDB' in window)){resolve(false);return}const req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('app'))db.createObjectStore('app',{keyPath:'id'});if(!db.objectStoreNames.contains('meta'))db.createObjectStore('meta',{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>resolve(false)})}
 async function idbGet(){const db=await openAppDB();if(!db)return null;return new Promise(resolve=>{try{const r=db.transaction('app','readonly').objectStore('app').get('state');r.onsuccess=()=>resolve(r.result?.value||null);r.onerror=()=>resolve(null)}catch{resolve(null)}})}
@@ -221,9 +221,9 @@ const BASE_STAT_TYPES=[['goal','Goals'],['assist','Assists'],['corner','Corners'
 function statTypes(){const extra=(data.settings.extraEvents||[]).map(x=>[x.key,x.label||x.key]);return [...BASE_STAT_TYPES,...extra.filter(x=>!BASE_STAT_TYPES.some(b=>b[0]===x[0]))]}
 function selectedStatTypes(){const boxes=[...document.querySelectorAll('[data-stat-type]')];return boxes.length?boxes.filter(b=>b.checked).map(b=>b.dataset.statType):['goal','assist']}
 function renderStatFilters(){const root=$('statEventFilters');if(!root)return;const previous=new Set(selectedStatTypes());root.innerHTML=statTypes().map(([key,label])=>`<label class="eventchip" style="display:inline-flex;align-items:center;gap:5px;padding:5px 8px"><input type="checkbox" data-stat-type="${esc(key)}" ${previous.has(key)||(!root.dataset.ready&&['goal','assist'].includes(key))?'checked':''} style="width:auto">${esc(label)}</label>`).join('');root.dataset.ready='1';root.querySelectorAll('[data-stat-type]').forEach(cb=>cb.onchange=()=>{renderStats();renderSeasonStats()})}
-function eventStatCount(match, playerId, type){const ev=match.events||[];if(type==='goal')return ev.filter(e=>e.type==='goal'&&e.playerId===playerId).length;if(type==='assist')return ev.filter(e=>e.type==='goal'&&e.assistId===playerId).length;if(type==='penalty'){const inMatch=ev.filter(e=>(e.type==='penalty_goal'||(e.type==='goal'&&e.sourceType==='penalty'))&&e.playerId===playerId).length;const so=match.shootout||{};const shootout=(so.our||[]).filter(k=>k.playerId===playerId&&k.outcome==='scored').length;return {main:inMatch,shootout}}
+function eventStatCount(match, playerId, type){const ev=match.events||[];const playerObj=(match.squadSnapshot||[]).find(p=>p.id===playerId)||data.squad.find(p=>p.id===playerId);const playerLabel=String(playerObj?.name||'').trim().toLowerCase();const samePlayer=(e,idField,nameFields)=>e[idField]===playerId||(playerLabel&&nameFields.some(n=>String(e[n]||'').trim().toLowerCase()===playerLabel));if(type==='goal')return ev.filter(e=>e.type==='goal'&&samePlayer(e,'playerId',['playerName','scorerName'])).length;if(type==='assist')return ev.filter(e=>e.type==='goal'&&samePlayer(e,'assistId',['assistName'])).length;if(type==='penalty'){const inMatch=ev.filter(e=>(e.type==='penalty_goal'||(e.type==='goal'&&e.sourceType==='penalty'))&&e.playerId===playerId).length;const so=match.shootout||{};const shootout=(so.our||[]).filter(k=>k.playerId===playerId&&k.outcome==='scored').length;return {main:inMatch,shootout}}
 if(type==='injury')return ev.filter(e=>(e.type==='injury'||e.type==='injured')&&e.playerId===playerId&&/injured/i.test(e.text||'')).length;
-return ev.filter(e=>e.type===type&&e.playerId===playerId).length}
+return ev.filter(e=>e.type===type&&samePlayer(e,'playerId',['playerName','scorerName'])).length}
 function statDisplay(value,type){if(type==='penalty')return `${value.main} (${value.shootout} shootout${value.shootout===1?'':'s'})`;return String(value)}
 function statTotalForMatch(match,type){if(type==='goal')return (match.events||[]).filter(e=>e.type==='goal').length;if(type==='assist')return (match.events||[]).filter(e=>e.type==='goal'&&e.assistId).length;if(type==='penalty'){const main=(match.events||[]).filter(e=>e.type==='penalty_goal'||(e.type==='goal'&&e.sourceType==='penalty')).length;return {main,shootout:((match.shootout||{}).our||[]).filter(k=>k.outcome==='scored').length}}
 if(type==='injury')return (match.events||[]).filter(e=>(e.type==='injury'||e.type==='injured')&&/injured/i.test(e.text||'')).length;
@@ -234,13 +234,16 @@ function renderStats(){
  if(!$('statEventFilters')?.dataset.ready)renderStatFilters();
  const types=selectedStatTypes(),selected=$('statsTeamSelect')?.value||'all';
  const all=seasonMatches();
- const records=selectedPeriodMatches(all).filter(({match})=>selected==='all'||String(match.team||'Unnamed team')===selected);
+ const filteredRecords=selectedPeriodMatches(all).filter(({match})=>selected==='all'||String(match.team||'Unnamed team')===selected);
+ const records=(filteredRecords.length||!all.length)?filteredRecords:all;
+ const filterFallback=all.length>0&&filteredRecords.length===0;
  const players=new Map();
  for(const {match} of records){const add=(id,name)=>{if(!id&&!name)return;const key=id||('name:'+name);if(!players.has(key))players.set(key,{id:id||key,name:name||'Unknown player'})};(match.squadSnapshot||[]).forEach(p=>add(p.id,p.name));(match.events||[]).forEach(e=>{if(e.playerId)add(e.playerId,e.playerName||e.scorerName);if(e.assistId)add(e.assistId,e.assistName)});(match.shootout?.our||[]).forEach(k=>add(k.playerId,k.playerName));}
  const aggregate=(player,type)=>records.reduce((sum,{match})=>{const v=eventStatCount(match,player.id,type);if(type==='penalty'){sum.main+=v.main;sum.shootout+=v.shootout}else sum+=v;return sum},type==='penalty'?{main:0,shootout:0}:0);
  const totalFor=type=>records.reduce((sum,{match})=>{const v=statTotalForMatch(match,type);if(type==='penalty'){sum.main+=v.main;sum.shootout+=v.shootout}else sum+=v;return sum},type==='penalty'?{main:0,shootout:0}:0);
+ if(records.length){for(const p of (data.squad||[])){const key=p.id||('name:'+p.name);if(!players.has(key))players.set(key,{id:p.id||key,name:p.name||'Unknown player'});}}
  const rows=[...players.values()].sort((a,b)=>a.name.localeCompare(b.name));
- $('stats').innerHTML=records.length?`<p class="muted">${records.length} match${records.length===1?'':'es'} included · ${esc(selected==='all'?'All teams':selected)} · team, season and competition filters applied.</p><div style="overflow-x:auto"><table class="stat-table"><thead><tr><th>Player</th>${types.map(t=>`<th>${esc(statTypes().find(x=>x[0]===t)?.[1]||t)}</th>`).join('')}</tr></thead><tbody>${rows.map(p=>`<tr><td>${esc(p.name)}</td>${types.map(type=>`<td>${esc(statDisplay(aggregate(p,type),type))}</td>`).join('')}</tr>`).join('')}<tr class="stat-total"><th>TEAM TOTAL</th>${types.map(type=>`<th>${esc(totalDisplay(totalFor(type),type))}</th>`).join('')}</tr></tbody></table></div>`:'<div class="empty">No saved matches match these filters. With all three filters set to All, every saved match should be included.</div>';
+ $('stats').innerHTML=records.length?`${filterFallback?'<div class="notice">No matches matched the selected filters, so statistics below show all saved matches instead.</div>':''}<p class="muted">${records.length} match${records.length===1?'':'es'} included · ${esc(filterFallback?'All saved matches':(selected==='all'?'All teams':selected))} · team, season and competition filters applied.</p><div style="overflow-x:auto"><table class="stat-table"><thead><tr><th>Player</th>${types.map(t=>`<th>${esc(statTypes().find(x=>x[0]===t)?.[1]||t)}</th>`).join('')}</tr></thead><tbody>${rows.map(p=>`<tr><td>${esc(p.name)}</td>${types.map(type=>`<td>${esc(statDisplay(aggregate(p,type),type))}</td>`).join('')}</tr>`).join('')}<tr class="stat-total"><th>TEAM TOTAL</th>${types.map(type=>`<th>${esc(totalDisplay(totalFor(type),type))}</th>`).join('')}</tr></tbody></table></div>`:'<div class="empty">No saved matches match these filters. With all three filters set to All, every saved match should be included.</div>';
 }
 function seasonMatches(){const list=(Array.isArray(data.matches)?data.matches:[]).map((r,i)=>{const n=normaliseSavedMatch(r,i),mm=n.match;return {key:'saved-'+i,match:mm,record:r}});if(m().status!=='finished'&&m().events.some(e=>e.type==='goal'||e.type==='opponentGoal'))list.push({key:'current',match:m(),record:null});return list}
 function selectedPeriodMatches(list){const season=$('seasonSelect')?.value||'all',competition=$('competitionFilter')?.value||'all';return list.filter(({match})=>{const type=String(match.matchType||match.competitionType||'League').trim()||'League';if(competition!=='all'&&type.toLowerCase()!==String(competition).toLowerCase())return false;if(season==='all')return true;const wanted=String(season).startsWith('season:')?String(season).slice(7):String(season);const actual=String(match.season||seasonForDate(match.date||'')||'').trim();return actual===wanted})}
@@ -269,17 +272,33 @@ function renderSeasonStats(){
 }
 $('seasonSelect').onchange=()=>{renderStats();renderHistory()};$('competitionFilter').onchange=()=>{renderStats();renderHistory()};$('statsTeamSelect').onchange=()=>{renderStats();renderHistory()};$('clearStatsFilters').onclick=()=>{$('statsTeamSelect').value='all';$('seasonSelect').value='all';$('competitionFilter').value='all';renderStats();renderHistory()}
 
-function normaliseSavedMatch(record,index){const raw=record&&record.match&&typeof record.match==='object'?record.match:(record||{});return {record,index,match:{...raw,team:String(raw.team||record?.team||'Unnamed team').trim()||'Unnamed team',opponent:String(raw.opponent||record?.opponent||'Opposition'),date:raw.date||record?.date||'',season:raw.season||record?.season||'',tournamentGroup:raw.tournamentGroup||record?.tournamentGroup||'',matchType:raw.matchType||raw.competitionType||record?.matchType||record?.competitionType||'League',events:Array.isArray(raw.events)?raw.events:[],squadSnapshot:raw.squadSnapshot||record?.squadSnapshot||[],shootout:raw.shootout||record?.shootout||null,goals:record?.goals,opponentGoals:record?.opponentGoals}}}
+function normaliseSavedMatch(record,index){
+ // Accept current records, older flat records, and backups wrapped in common export containers.
+ let raw=record&&record.match&&typeof record.match==='object'?record.match:(record||{});
+ for(let depth=0;depth<3;depth++){
+   if(raw&&raw.match&&typeof raw.match==='object'){raw=raw.match;continue;}
+   if(raw&&raw.data&&typeof raw.data==='object'&&!Array.isArray(raw.data)){raw=raw.data;continue;}
+   if(raw&&raw.matchData&&typeof raw.matchData==='object'){raw=raw.matchData;continue;}
+   break;
+ }
+ const outer=record||{};
+ const events=Array.isArray(raw.events)?raw.events:(Array.isArray(outer.events)?outer.events:[]);
+ const snapshot=raw.squadSnapshot||outer.squadSnapshot||raw.playersSnapshot||outer.playersSnapshot||[];
+ const match={...raw,team:String(raw.team||outer.team||raw.teamName||outer.teamName||'Unnamed team').trim()||'Unnamed team',opponent:String(raw.opponent||outer.opponent||raw.opposition||outer.opposition||'Opposition'),date:raw.date||outer.date||raw.matchDate||outer.matchDate||'',season:raw.season||outer.season||raw.seasonName||outer.seasonName||'',tournamentGroup:raw.tournamentGroup||outer.tournamentGroup||raw.tournament||outer.tournament||'',matchType:raw.matchType||raw.competitionType||outer.matchType||outer.competitionType||outer.competition||'League',events,squadSnapshot:Array.isArray(snapshot)?snapshot:[],shootout:raw.shootout||outer.shootout||null,goals:outer.goals,opponentGoals:outer.opponentGoals};
+ return {record,index,match};
+}
 function saveCurrentMatchToHistory(){if(!matchHasContent())return false;const ok=archiveFinishedMatch();if(!ok)return false;const persisted=persistData();render();return persisted}
 function renderHistory(){
  const selectedTeam=$('statsTeamSelect')?.value||'all';
  const normalised=(Array.isArray(data.matches)?data.matches:[]).map((record,index)=>normaliseSavedMatch(record,index));
- const items=normalised.filter(({match})=>selectedTeam==='all'||match.team===selectedTeam).filter(({match})=>selectedPeriodMatches([{match}]).length>0).reverse();
+ const filteredItems=normalised.filter(({match})=>selectedTeam==='all'||match.team===selectedTeam).filter(({match})=>selectedPeriodMatches([{match}]).length>0);
+ const historyFallback=normalised.length>0&&filteredItems.length===0;
+ const items=(historyFallback?normalised:filteredItems).slice().reverse();
  const host=$('historyList');if(!host)return;
  const current=m(),hasCurrent=matchHasContent(current)&&current.status!=='finished';
  const currentAlreadySaved=!!current.historyKey&&normalised.some(({record,match})=>record.historyKey===current.historyKey||match.historyKey===current.historyKey);
  const showCurrent=hasCurrent&&!currentAlreadySaved&&(selectedTeam==='all'||String(current.team||'Unnamed team')===selectedTeam)&&selectedPeriodMatches([{match:normaliseSavedMatch(current,-1).match}]).length>0;
- const summary=`<p class="muted" style="margin:0 0 10px">Showing ${items.length} of ${normalised.length} saved matches · ${esc(selectedTeam==='all'?'All teams':selectedTeam)} · season and competition filters applied.</p>`;
+ const summary=`${historyFallback?'<div class="notice"><strong>Filter recovery:</strong> no matches matched the selected filters, so all saved match records are shown below to prevent them being hidden.</div>':''}<p class="muted" style="margin:0 0 10px">Showing ${items.length} of ${normalised.length} saved matches · ${esc(historyFallback?'All saved matches':(selectedTeam==='all'?'All teams':selectedTeam))} · season and competition filters applied.</p>`;
  let currentHtml='';
  if(showCurrent){const mm=current,goals=(mm.events||[]).filter(e=>e.type==='goal').length,opGoals=(mm.events||[]).filter(e=>e.type==='opponentGoal').length;currentHtml=`<div class="summaryline" style="border:1px solid var(--accent,#888);margin-bottom:10px"><strong>Current match · not yet saved to history</strong><div>${esc(mm.team||'Your team')} vs ${esc(mm.opponent||'Opposition')}</div><div class="muted">${esc(mm.date||'')} · ${esc(mm.matchType||'League')} · ${goals}–${opGoals}</div><button type="button" class="primary small" data-savecurrenthistory>Save current match to history</button></div>`}
  const bindSave=()=>{const b=host.querySelector('[data-savecurrenthistory]');if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();if(saveCurrentMatchToHistory()){alert('Match saved to history.');render()}}};

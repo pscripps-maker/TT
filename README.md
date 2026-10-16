@@ -145,3 +145,10 @@ This build restores the complete r8 application codebase (rather than the reduce
 - Saved matches from the current local-storage key, known legacy local-storage keys, and the IndexedDB mirror are reconciled into one saved-match list instead of one store replacing another.
 - Match history is grouped by team, then season, then tournament/competition, while the existing team, season and competition filters apply to both reports and statistics.
 - Browser data sources are read and merged without clearing them. Keep exporting a backup before updates; local-file and GitHub Pages storage are separate browser origins.
+
+
+## r12 History/statistics visibility recovery
+- Normalises current and legacy saved-match wrappers before display.
+- If filters unexpectedly hide every record while saved matches exist, history shows all records with a recovery notice instead of an empty list.
+- Player statistics use the same saved-match set and include current squad names when older reports lack squad snapshots.
+- Service-worker cache bumped to r12.
