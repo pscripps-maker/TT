@@ -1,21 +1,21 @@
 {
-  "release": "Player of the Match selection and custom event edit/delete",
-  "cache": "touchline-tracker-20261017-r15",
+  "release": "Remove live Player of the Match button; record award in timeline",
+  "cache": "touchline-tracker-20261017-r17",
   "files": {
-    "index.html": "f58f7c4f169dc6870c741eeef111ad15ee573e00931e6b9dcdc41b3dfc9e4d0a",
-    "app.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
-    "inline-check.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
-    "sw.js": "21770a6358a8a09d28c3ce856ef01b49065e5fd7c68699e46a915ddde486837a",
+    "index.html": "d72cfb3fb3079064389b11228c2070bd9b4e553a9f9f6640eb58529486293c7f",
+    "app.js": "5d2b940728903cb7e15e71c73a93fbe7f439baf5336edf2f18b6c10ac1c5580e",
+    "inline-check.js": "5d2b940728903cb7e15e71c73a93fbe7f439baf5336edf2f18b6c10ac1c5580e",
+    "sw.js": "e789721dfa5a361f43b73e3333f100902e12bb57dba7a228f3e2a161db057733",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
   "sha256": {
-    "index.html": "f58f7c4f169dc6870c741eeef111ad15ee573e00931e6b9dcdc41b3dfc9e4d0a",
-    "app.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
-    "inline-check.js": "eb22fd10c907970cb61684378f274f18316bbb0294d76d99356f5851d4fb1770",
-    "sw.js": "21770a6358a8a09d28c3ce856ef01b49065e5fd7c68699e46a915ddde486837a",
+    "index.html": "d72cfb3fb3079064389b11228c2070bd9b4e553a9f9f6640eb58529486293c7f",
+    "app.js": "5d2b940728903cb7e15e71c73a93fbe7f439baf5336edf2f18b6c10ac1c5580e",
+    "inline-check.js": "5d2b940728903cb7e15e71c73a93fbe7f439baf5336edf2f18b6c10ac1c5580e",
+    "sw.js": "e789721dfa5a361f43b73e3333f100902e12bb57dba7a228f3e2a161db057733",
     "manifest.webmanifest": "bf6bc94f36b00d222c9c715d02dfa53945fd351959b8260c81c054d0ae42f76a"
   },
-  "version": "TT-2026.10.17-r15",
-  "build": "TT-2026.10.17-r15",
+  "version": "TT-2026.10.17-r17",
+  "build": "TT-2026.10.17-r17",
   "date": "2026-10-17"
 }

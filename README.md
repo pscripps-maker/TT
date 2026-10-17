@@ -173,3 +173,16 @@ This build restores the complete r8 application codebase (rather than the reduce
 - Custom event buttons now appear in Event button settings with editable labels, button order, and Delete controls. Deleting a custom event removes it from current settings/statistics; existing match timeline records are retained.
 - After full time (including ending the final half/quarter), the app prompts to choose Player of the Match. The selection is saved with the match, can be changed later from the live screen, appears in match reports, and is counted in player statistics.
 - Existing local data is preserved during update; do not clear browser storage.
+
+
+## r16 update
+- Removed the Player of the Match button from the live controls to preserve mobile layout.
+- Final-time prompt lets you select None, a starter, or a substitute; selection is recorded in the timeline and player statistics.
+- Removed the persistent unsaved-current-match banner from History / Stats.
+
+
+## r17 update
+
+- Removed legacy custom “Player of the Match” / “Man of the Match” event buttons from saved settings automatically, including their button-order entries. The award is selected only in the full-time picker.
+- Player of the Match choice is recorded as a single `playerOfTheMatch` event in the match timeline and counted in player statistics; selecting None clears the award event.
+- Existing match and squad data are preserved.
